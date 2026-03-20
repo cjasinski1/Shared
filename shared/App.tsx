@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
@@ -7,30 +6,25 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from './lib/supabase';
 import { styles } from './styles/homeStyles';
+import AddBillSheet from './components/AddBillSheet';
 
 const HOUSEHOLD_ID = '11111111-1111-1111-1111-111111111111';
 const MEMBERS = ['JK', 'RM', 'SA', '+1'];
 const AVATAR_COLORS = [
-  { bg: '#e1f5ee77', text: '#085041' },
+  { bg: '#E1F5EE', text: '#085041' },
   { bg: '#EEEDFE', text: '#3C3489' },
   { bg: '#FAEEDA', text: '#633806' },
   { bg: '#FAECE7', text: '#712B13' },
 ];
 const BILL_COLORS: Record<string, string> = {
-  Rent: '#E1F5EE',
-  Electricity: '#FAEEDA',
-  Internet: '#EEEDFE',
-  Gas: '#FAECE7',
-  Water: '#E6F1FB',
-  Default: '#F1EFE8',
+  Rent: '#E1F5EE', Electricity: '#FAEEDA',
+  Internet: '#EEEDFE', Gas: '#FAECE7',
+  Water: '#E6F1FB', Default: '#F1EFE8',
 };
 const BILL_ICONS: Record<string, string> = {
-  Rent: '⌂',
-  Electricity: '⚡',
-  Internet: '◎',
-  Gas: '◈',
-  Water: '◉',
-  Default: '◆',
+  Rent: '⌂', Electricity: '⚡',
+  Internet: '◎', Gas: '◈',
+  Water: '◉', Default: '◆',
 };
 
 type Bill = {
@@ -47,19 +41,12 @@ export default function HomeScreen() {
   const [householdName, setHouseholdName] = useState('');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   async function fetchData() {
     const [{ data: household }, { data: billsData }] = await Promise.all([
-      supabase
-        .from('households')
-        .select('name')
-        .eq('id', HOUSEHOLD_ID)
-        .single(),
-      supabase
-        .from('bills')
-        .select('*')
-        .eq('household_id', HOUSEHOLD_ID)
-        .order('due_day'),
+      supabase.from('households').select('name').eq('id', HOUSEHOLD_ID).single(),
+      supabase.from('bills').select('*').eq('household_id', HOUSEHOLD_ID).order('due_day'),
     ]);
     if (household) setHouseholdName(household.name);
     if (billsData) setBills(billsData);
@@ -69,14 +56,8 @@ export default function HomeScreen() {
 
   async function togglePaid(bill: Bill) {
     const newStatus = !bill.is_paid;
-    // Update screen instantly, save to DB in background
-    setBills(prev =>
-      prev.map(b => (b.id === bill.id ? { ...b, is_paid: newStatus } : b))
-    );
-    await supabase
-      .from('bills')
-      .update({ is_paid: newStatus })
-      .eq('id', bill.id);
+    setBills(prev => prev.map(b => b.id === bill.id ? { ...b, is_paid: newStatus } : b));
+    await supabase.from('bills').update({ is_paid: newStatus }).eq('id', bill.id);
   }
 
   useEffect(() => { fetchData(); }, []);
@@ -86,10 +67,7 @@ export default function HomeScreen() {
   const pending = total - paid;
   const each = MEMBERS.length > 0 ? Math.round(pending / MEMBERS.length) : 0;
   const progress = total > 0 ? Math.round((paid / total) * 100) : 0;
-  const monthLabel = new Date().toLocaleString('default', {
-    month: 'long',
-    year: 'numeric',
-  });
+  const monthLabel = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
 
   if (loading) {
     return (
@@ -101,7 +79,6 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
@@ -124,19 +101,15 @@ export default function HomeScreen() {
                 key={m}
                 style={[
                   styles.avatar,
-                  {
-                    backgroundColor: AVATAR_COLORS[i].bg,
-                    marginLeft: i === 0 ? 0 : -6,
-                  },
+                  { backgroundColor: AVATAR_COLORS[i].bg, marginLeft: i === 0 ? 0 : -6 },
                 ]}
               >
-                <Text style={[styles.avatarText, { color: AVATAR_COLORS[i].text }]}>
-                  {m}
-                </Text>
+                <Text style={[styles.avatarText, { color: AVATAR_COLORS[i].text }]}>{m}</Text>
               </View>
             ))}
           </View>
         </View>
+
         <View style={styles.summaryRow}>
           <View style={styles.summaryCard}>
             <Text style={styles.summaryLabel}>Total</Text>
@@ -144,20 +117,18 @@ export default function HomeScreen() {
           </View>
           <View style={styles.summaryCard}>
             <Text style={styles.summaryLabel}>Paid</Text>
-            <Text style={[styles.summaryVal, styles.green]}>
-              ${paid.toLocaleString()}
-            </Text>
+            <Text style={[styles.summaryVal, styles.green]}>${paid.toLocaleString()}</Text>
           </View>
           <View style={styles.summaryCard}>
             <Text style={styles.summaryLabel}>Each owes</Text>
-            <Text style={[styles.summaryVal, styles.amber]}>
-              ${each.toLocaleString()}
-            </Text>
+            <Text style={[styles.summaryVal, styles.amber]}>${each.toLocaleString()}</Text>
           </View>
         </View>
+
         <View style={styles.progressTrack}>
           <View style={[styles.progressFill, { width: `${progress}%` }]} />
         </View>
+
         <Text style={styles.sectionLabel}>THIS MONTH</Text>
 
         {bills.map(bill => {
@@ -172,18 +143,14 @@ export default function HomeScreen() {
               activeOpacity={0.7}
             >
               <View style={[styles.check, bill.is_paid && styles.checkDone]}>
-                {bill.is_paid && (
-                  <Text style={styles.checkMark}>✓</Text>
-                )}
+                {bill.is_paid && <Text style={styles.checkMark}>✓</Text>}
               </View>
               <View style={[styles.billIcon, { backgroundColor: iconBg }]}>
                 <Text style={styles.billIconText}>{icon}</Text>
               </View>
               <View style={styles.billInfo}>
                 <Text style={styles.billName}>{bill.name}</Text>
-                <Text style={styles.billMeta}>
-                  Due {bill.due_day} · {bill.paid_by} pays
-                </Text>
+                <Text style={styles.billMeta}>Due {bill.due_day} · {bill.paid_by} pays</Text>
               </View>
               <View style={styles.billRight}>
                 <Text style={styles.billAmt}>${bill.amount.toLocaleString()}</Text>
@@ -195,12 +162,17 @@ export default function HomeScreen() {
             </TouchableOpacity>
           );
         })}
-        <TouchableOpacity style={styles.addBtn}>
+
+        <TouchableOpacity
+          style={styles.addBtn}
+          onPress={() => setSheetOpen(true)}
+        >
           <Text style={styles.addBtnText}>+ Add a bill</Text>
         </TouchableOpacity>
 
         <View style={{ height: 40 }} />
       </ScrollView>
+
       <View style={styles.nav}>
         <View style={styles.navItem}>
           <View style={styles.navDot} />
@@ -220,6 +192,11 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
+      <AddBillSheet
+        visible={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        onBillAdded={fetchData}
+      />
     </SafeAreaView>
   );
 }
