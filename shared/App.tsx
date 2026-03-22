@@ -17,7 +17,7 @@ const AVATAR_COLORS = [
   { bg: '#FAECE7', text: '#712B13' },
 ];
 const BILL_COLORS: Record<string, string> = {
-  Rent: '#E1F5EE', Electricity: '#FAEEDA',
+  Rent: '#ffffff', Electricity: '#FAEEDA',
   Internet: '#EEEDFE', Gas: '#FAECE7',
   Water: '#E6F1FB', Default: '#F1EFE8',
 };

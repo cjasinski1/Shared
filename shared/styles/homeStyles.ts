@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
   summaryCard: { flex: 1, backgroundColor: '#f5f5f3', borderRadius: 10, padding: 11 },
   summaryLabel: { fontSize: 10, color: '#888', marginBottom: 3 },
   summaryVal: { fontSize: 16, fontWeight: '500', color: '#000' },
-  green: { color: '#0F6E56' },
+  green: { color: '#0f6e35' },
   amber: { color: '#854F0B' },
   progressTrack: { height: 4, backgroundColor: '#f0f0ee', borderRadius: 2, marginBottom: 20, overflow: 'hidden' },
   progressFill: { height: 4, backgroundColor: '#1D9E75', borderRadius: 2 },
